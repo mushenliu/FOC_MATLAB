@@ -32,7 +32,7 @@ figure;
 hold on;
 title('输入输出互相关函数');
 i=-(n-1):1:n-1;
-plot(i,Ryu);
+plot(i,Ryu)
 figure;
 hold on;
 title('输入自相关函数函数');
