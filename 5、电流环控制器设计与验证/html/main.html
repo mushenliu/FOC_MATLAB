@@ -1,0 +1,651 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      -->
+<title>main</title>
+<meta name="generator" content="MATLAB 24.2">
+<link rel="schema.DC" href="http://purl.org/dc/elements/1.1/">
+<meta name="DC.date" content="2026-05-27">
+<meta name="DC.source" content="main.m">
+<style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style>
+</head>
+<body>
+<div class="content">
+<h2>Contents</h2>
+<div>
+<ul>
+<li>
+<a href="#3">参数辨识结果</a>
+</li>
+<li>
+<a href="#4">D轴频域矫正控制器设计</a>
+</li>
+<li>
+<a href="#5">D轴频域矫正控制器正向阶跃验证</a>
+</li>
+<li>
+<a href="#6">D轴频域矫正控制器负向阶跃验证</a>
+</li>
+<li>
+<a href="#7">Q轴频域矫正控制器设计</a>
+</li>
+<li>
+<a href="#8">Q轴频域矫正控制器正向阶跃验证</a>
+</li>
+<li>
+<a href="#9">Q轴频域矫正控制器负向阶跃验证</a>
+</li>
+</ul>
+</div>
+<pre class="codeinput">close <span class="string">all</span>;
+clear;
+clc;
+opts = bodeoptions;
+opts.FreqUnits = <span class="string">'Hz'</span>;
+opts.PhaseWrapping = <span class="string">'on'</span>;
+</pre>
+<p>
+<img src="main_eq04948465694563195499.png" alt="$x^2+e^{\pi i}$" style="width:49px;height:14px;"></p>
+<pre class="codeinput">opts.Grid = <span class="string">'on'</span>;
+Ts = 1/15000;
+s=tf(<span class="string">'s'</span>);
+z=tf(<span class="string">'z'</span>,Ts);
+<span class="comment">%阶跃统计序列段</span>
+Start = 90;
+Stop = 300;
+</pre>
+<h2 id="3">参数辨识结果</h2>
+<pre class="codeinput">Rs=8.40955;
+Ld=2.09206e-3;
+Psi=0.019415978;
+Lq=2.47478e-3;
+np=14;
+Ts = 1/15000;
+
+Gd = c2d(1/(Rs+Ld*s),Ts,<span class="string">'zoh'</span>);
+Gd = c2d(1/(Rs+Ld*s)*exp(-1*Ts*s),Ts,<span class="string">'zoh'</span>);
+Gq = 1/(Rs+Lq*s);
+Gq = c2d(1/(Rs+Lq*s)*exp(-1*Ts*s),Ts,<span class="string">'zoh'</span>);
+</pre>
+<h2 id="4">D轴频域矫正控制器设计</h2>
+<pre class="codeinput">
+<span class="comment">%相位补偿/&deg;</span>
+phi = 50;
+<span class="comment">%补偿频率/Hz</span>
+f = 2000;
+f = 800;
+<span class="comment">% %补偿分贝数</span>
+<span class="comment">% A = 89.5;</span>
+<span class="comment">%计算频域矫正控制器</span>
+alpha_d = (1-sin(deg2rad(phi)))/(1+sin(deg2rad(phi)));
+Td = 1/(2*pi*f*sqrt(alpha_d));
+Kd = 1;
+Cd = Kd * 1/s * (Td*s+1)/(alpha_d*Td*s+1);
+Cd = c2d(Cd,Ts,<span class="string">'tustin'</span>);
+[A,~,~]=bode(Gd*Cd,2*pi*f);
+Kd = 1/A;
+Cd = Cd * Kd;
+figure;
+bode(Gd*c2d(1/s,Ts,<span class="string">'tustin'</span>),opts);
+title(<span class="string">'D轴电流环等价被控对象'</span>);
+figure;
+bode(Gd,Gd*Cd,opts);
+grid <span class="string">on</span>;
+title(<span class="string">'D轴电流环开环伯德图'</span>);
+legend(<span class="string">'被控对象'</span>,<span class="string">'频域矫正'</span>);
+Close_d = feedback(Gd*Cd,1);
+figure;
+bode(Close_d,opts);
+grid <span class="string">on</span>;
+title(<span class="string">'D轴电流环闭环伯德图'</span>);
+figure;
+step(Gd,Close_d);
+grid <span class="string">on</span>;
+title(<span class="string">'D轴电流环单位阶跃响应'</span>);
+legend(<span class="string">'被控对象'</span>,<span class="string">'频域矫正'</span>);
+[Gm,Pm,Wcg,Wcp] = margin(Gd*Cd);
+BW = bandwidth(Close_d);
+fprintf(<span class="string">'D轴电流环超前校正：\n'</span>)
+fprintf(<span class="string">'开环截止频率：%.3fHz\n'</span>,Wcp/(2*pi));
+fprintf(<span class="string">'相位裕度：%.3f&deg;\n'</span>,Pm);
+fprintf(<span class="string">'相位穿越频率：%.3fHz\n'</span>,Wcg/(2*pi));
+fprintf(<span class="string">'幅值裕度：%.3fdB\n'</span>,20*log10(Gm));
+fprintf(<span class="string">'闭环带宽：%.3fHz\n'</span>,BW/(2*pi));
+</pre>
+<pre class="codeoutput">警告: 使用状态空间表示法实现更高效的离散时滞建模。 
+D轴电流环超前校正：
+开环截止频率：800.000Hz
+相位裕度：59.419&deg;
+相位穿越频率：1704.392Hz
+幅值裕度：6.909dB
+闭环带宽：1812.409Hz
+</pre>
+<img vspace="5" hspace="5" src="main_01.png" alt=""> <img vspace="5" hspace="5" src="main_02.png" alt=""> <img vspace="5" hspace="5" src="main_03.png" alt=""> <img vspace="5" hspace="5" src="main_04.png" alt=""> <h2 id="5">D轴频域矫正控制器正向阶跃验证</h2>
+<pre class="codeinput">data = load(<span class="string">'D_Close_P.txt'</span>);
+input = data(:,10);
+output_rec = data(:,5);
+Iq = data(:,6);
+theta_e = data(:,2);
+we = zeros(length(theta_e),1);
+we(1) = 0;
+<span class="keyword">for</span> i=2:length(we)
+    we(i)=(theta_e(i)-theta_e(i-1))/Ts * 2 * pi / 360;
+    <span class="keyword">if</span>(abs(theta_e(i)-theta_e(i-1))&gt;50)
+        we(i)=we(i-1);
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+t = Ts:Ts:Ts*(length(input));
+Sim_input = [t',input];
+Sim_Iq = [t',Iq];
+Sim_we = [t',we];
+t = Ts:Ts:Ts*(length(input));
+Sim_input = [t',input];
+out = sim(<span class="string">"D_Axis.slx"</span>);
+output_sim = out.Sim_output.Data;
+figure;
+plot(t(Start:Stop),output_rec(Start:Stop), <span class="keyword">...</span>
+    t(Start:Stop),output_sim(Start:Stop),LineWidth=2);
+title(<span class="string">'D轴正向阶跃给定的闭环响应对比'</span>);
+legend(<span class="string">'实测输出'</span>,<span class="string">'仿真输出'</span>);
+grid <span class="string">on</span>;
+ylabel(<span class="string">'电流/A'</span>);
+xlabel(<span class="string">'时间/s'</span>);
+cov_sim_rec = cov(output_rec(Start:Stop), output_sim(Start:Stop));
+cov_sim_rec=cov_sim_rec(1,2);
+r=cov_sim_rec/(sqrt(var(output_rec(Start:Stop)))* <span class="keyword">...</span>
+    sqrt(var(output_sim(Start:Stop))));
+fprintf(<span class="string">'D轴正向阶跃给定的闭环相关系数：%.5f%%\n'</span>,r*100);
+</pre>
+<pre class="codeoutput">D轴正向阶跃给定的闭环相关系数：99.53992%
+</pre>
+<img vspace="5" hspace="5" src="main_05.png" alt=""> <h2 id="6">D轴频域矫正控制器负向阶跃验证</h2>
+<pre class="codeinput">data = load(<span class="string">'D_Close_N.txt'</span>);
+input = data(:,10);
+output_rec = data(:,5);
+Iq = data(:,6);
+theta_e = data(:,2);
+we = zeros(length(theta_e),1);
+we(1) = 0;
+<span class="keyword">for</span> i=2:length(we)
+    we(i)=(theta_e(i)-theta_e(i-1))/Ts * 2 * pi / 360;
+    <span class="keyword">if</span>(abs(theta_e(i)-theta_e(i-1))&gt;50)
+        we(i)=we(i-1);
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+t = Ts:Ts:Ts*(length(input));
+Sim_input = [t',input];
+Sim_Iq = [t',Iq];
+Sim_we = [t',we];
+out = sim(<span class="string">"D_Axis.slx"</span>);
+output_sim = out.Sim_output.Data;
+figure;
+plot(t(Start:Stop),output_rec(Start:Stop), <span class="keyword">...</span>
+    t(Start:Stop),output_sim(Start:Stop),LineWidth=2);
+title(<span class="string">'D轴负向阶跃给定的闭环响应对比'</span>);
+legend(<span class="string">'实测输出'</span>,<span class="string">'仿真输出'</span>);
+grid <span class="string">on</span>;
+ylabel(<span class="string">'电流/A'</span>);
+xlabel(<span class="string">'时间/s'</span>);
+cov_sim_rec = cov(output_rec(Start:Stop), output_sim(Start:Stop));
+cov_sim_rec=cov_sim_rec(1,2);
+r=cov_sim_rec/(sqrt(var(output_rec(Start:Stop)))* <span class="keyword">...</span>
+    sqrt(var(output_sim(Start:Stop))));
+fprintf(<span class="string">'D轴负向阶跃给定的闭环相关系数：%.5f%%\n\n'</span>,r*100);
+</pre>
+<pre class="codeoutput">D轴负向阶跃给定的闭环相关系数：99.55014%
+
+</pre>
+<img vspace="5" hspace="5" src="main_06.png" alt=""> <h2 id="7">Q轴频域矫正控制器设计</h2>
+<pre class="codeinput">
+<span class="comment">%相位补偿/&deg;</span>
+phi = 30;
+<span class="comment">%补偿频率/Hz</span>
+f = 2000;
+f = 500;
+<span class="comment">% %补偿分贝数</span>
+<span class="comment">% A = 89.5;</span>
+<span class="comment">%计算频域矫正控制器</span>
+alpha_q = (1-sin(deg2rad(phi)))/(1+sin(deg2rad(phi)));
+Tq = 1/(2*pi*f*sqrt(alpha_q));
+Kq = 1;
+Cq = Kq * 1/s * (Tq*s+1)/(alpha_q*Tq*s+1);
+Cq = c2d(Cq,Ts,<span class="string">'tustin'</span>);
+[A,~,~]=bode(Gq*Cq,2*pi*f);
+Kd = 1/A;
+Cq = Cq * Kd;
+figure;
+bode(Gq,Gq*Cq,opts);
+grid <span class="string">on</span>;
+title(<span class="string">'Q轴电流环开环伯德图'</span>);
+legend(<span class="string">'被控对象'</span>,<span class="string">'频域矫正'</span>);
+Close_q = feedback(Gq*Cq,1);
+figure;
+bode(Close_q,opts);
+grid <span class="string">on</span>;
+title(<span class="string">'Q轴电流环闭环伯德图'</span>);
+figure;
+step(Gq,Close_q);
+grid <span class="string">on</span>;
+title(<span class="string">'Q轴电流环单位阶跃响应'</span>);
+legend(<span class="string">'被控对象'</span>,<span class="string">'频域矫正'</span>);
+[Gm,Pm,Wcg,Wcp] = margin(Gq*Cq);
+BW = bandwidth(Close_q);
+fprintf(<span class="string">'Q轴电流环超前校正：\n'</span>)
+fprintf(<span class="string">'开环截止频率：%.3fHz\n'</span>,Wcp/(2*pi));
+fprintf(<span class="string">'相位裕度：%.3f&deg;\n'</span>,Pm);
+fprintf(<span class="string">'相位穿越频率：%.3fHz\n'</span>,Wcg/(2*pi));
+fprintf(<span class="string">'幅值裕度：%.3fdB\n'</span>,20*log10(Gm));
+fprintf(<span class="string">'闭环带宽：%.3fHz\n'</span>,BW/(2*pi));
+</pre>
+<pre class="codeoutput">警告: 使用状态空间表示法实现更高效的离散时滞建模。 
+Q轴电流环超前校正：
+开环截止频率：500.000Hz
+相位裕度：59.019&deg;
+相位穿越频率：1237.869Hz
+幅值裕度：9.918dB
+闭环带宽：1026.428Hz
+</pre>
+<img vspace="5" hspace="5" src="main_07.png" alt=""> <img vspace="5" hspace="5" src="main_08.png" alt=""> <img vspace="5" hspace="5" src="main_09.png" alt=""> <h2 id="8">Q轴频域矫正控制器正向阶跃验证</h2>
+<pre class="codeinput">data = load(<span class="string">'Q_Close_P.txt'</span>);
+input = data(:,11);
+output_rec = data(:,6);
+Id = data(:,5);
+theta_e = data(:,2);
+we = zeros(length(theta_e),1);
+we(1) = 0;
+<span class="keyword">for</span> i=2:length(we)
+    we(i)=(theta_e(i)-theta_e(i-1))/Ts * 2 * pi / 360;
+    <span class="keyword">if</span>(abs(theta_e(i)-theta_e(i-1))&gt;50)
+        we(i)=we(i-1);
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+we = lowpass(we,0.1);
+t = Ts:Ts:Ts*(length(input));
+Sim_input = [t',input];
+Sim_Id = [t',Id];
+Sim_we = [t',we];
+out = sim(<span class="string">"Q_Axis.slx"</span>);
+output_sim = out.Sim_output.Data;
+figure;
+plot(t(Start:Stop),output_rec(Start:Stop), <span class="keyword">...</span>
+    t(Start:Stop),output_sim(Start:Stop),LineWidth=2);
+title(<span class="string">'Q轴正向阶跃给定的闭环响应对比'</span>);
+legend(<span class="string">'实测输出'</span>,<span class="string">'仿真输出'</span>);
+grid <span class="string">on</span>;
+ylabel(<span class="string">'电流/A'</span>);
+xlabel(<span class="string">'时间/s'</span>);
+cov_sim_rec = cov(output_rec(Start:Stop), output_sim(Start:Stop));
+cov_sim_rec=cov_sim_rec(1,2);
+r=cov_sim_rec/(sqrt(var(output_rec(Start:Stop)))* <span class="keyword">...</span>
+    sqrt(var(output_sim(Start:Stop))));
+fprintf(<span class="string">'Q轴正向阶跃给定的闭环相关系数：%.5f%%\n'</span>,r*100);
+</pre>
+<pre class="codeoutput">Q轴正向阶跃给定的闭环相关系数：96.18927%
+</pre>
+<img vspace="5" hspace="5" src="main_10.png" alt=""> <h2 id="9">Q轴频域矫正控制器负向阶跃验证</h2>
+<pre class="codeinput">data = load(<span class="string">'Q_Close_N.txt'</span>);
+input = data(:,11);
+output_rec = data(:,6);
+Id = data(:,5);
+theta_e = data(:,2);
+we = zeros(length(theta_e),1);
+we(1) = 0;
+<span class="keyword">for</span> i=2:length(we)
+    we(i)=(theta_e(i)-theta_e(i-1))/Ts * 2 * pi / 360;
+    <span class="keyword">if</span>(abs(theta_e(i)-theta_e(i-1))&gt;50)
+        we(i)=we(i-1);
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+we = lowpass(we,0.1);
+t = Ts:Ts:Ts*(length(input));
+Sim_input = [t',input];
+Sim_Id = [t',Id];
+Sim_we = [t',we];
+t = Ts:Ts:Ts*(length(input));
+Sim_input = [t',input];
+out = sim(<span class="string">"Q_Axis.slx"</span>);
+output_sim = out.Sim_output.Data;
+figure;
+plot(t(Start:Stop),output_rec(Start:Stop), <span class="keyword">...</span>
+    t(Start:Stop),output_sim(Start:Stop),LineWidth=2);
+title(<span class="string">'Q轴负向阶跃给定的闭环响应对比'</span>);
+legend(<span class="string">'实测输出'</span>,<span class="string">'仿真输出'</span>);
+grid <span class="string">on</span>;
+ylabel(<span class="string">'电流/A'</span>);
+xlabel(<span class="string">'时间/s'</span>);
+cov_sim_rec = cov(output_rec(Start:Stop), output_sim(Start:Stop));
+cov_sim_rec=cov_sim_rec(1,2);
+r=cov_sim_rec/(sqrt(var(output_rec(Start:Stop)))* <span class="keyword">...</span>
+    sqrt(var(output_sim(Start:Stop))));
+fprintf(<span class="string">'Q轴负向阶跃给定的闭环相关系数：%.5f%%\n'</span>,r*100);
+</pre>
+<pre class="codeoutput">Q轴负向阶跃给定的闭环相关系数：98.74872%
+</pre>
+<img vspace="5" hspace="5" src="main_11.png" alt=""> <p class="footer">
+<br>
+<a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2024b</a>
+<br>
+</p>
+</div>
+<!--
+##### SOURCE BEGIN #####
+close all;
+clear;
+clc;
+opts = bodeoptions;
+opts.FreqUnits = 'Hz';       
+opts.PhaseWrapping = 'on';
+%%
+% $x^2+e^{\pi i}$ 
+opts.Grid = 'on';
+Ts = 1/15000;
+s=tf('s');
+z=tf('z',Ts);
+%阶跃统计序列段
+Start = 90;
+Stop = 300;
+%% 参数辨识结果
+Rs=8.40955;
+Ld=2.09206e-3;
+Psi=0.019415978;
+Lq=2.47478e-3;
+np=14;
+Ts = 1/15000;
+
+Gd = c2d(1/(Rs+Ld*s),Ts,'zoh');
+Gd = c2d(1/(Rs+Ld*s)*exp(-1*Ts*s),Ts,'zoh');
+Gq = 1/(Rs+Lq*s);
+Gq = c2d(1/(Rs+Lq*s)*exp(-1*Ts*s),Ts,'zoh');
+%% D轴频域矫正控制器设计
+%相位补偿/°
+phi = 50;
+%补偿频率/Hz
+f = 2000;
+f = 800;
+% %补偿分贝数
+% A = 89.5;
+%计算频域矫正控制器
+alpha_d = (1-sin(deg2rad(phi)))/(1+sin(deg2rad(phi)));
+Td = 1/(2*pi*f*sqrt(alpha_d));
+Kd = 1;
+Cd = Kd * 1/s * (Td*s+1)/(alpha_d*Td*s+1);
+Cd = c2d(Cd,Ts,'tustin');
+[A,~,~]=bode(Gd*Cd,2*pi*f);
+Kd = 1/A;
+Cd = Cd * Kd;
+figure;
+bode(Gd*c2d(1/s,Ts,'tustin'),opts);
+title('D轴电流环等价被控对象');
+figure;
+bode(Gd,Gd*Cd,opts);
+grid on;
+title('D轴电流环开环伯德图');
+legend('被控对象','频域矫正');
+Close_d = feedback(Gd*Cd,1);
+figure;
+bode(Close_d,opts);
+grid on;
+title('D轴电流环闭环伯德图');
+figure;
+step(Gd,Close_d);
+grid on;
+title('D轴电流环单位阶跃响应');
+legend('被控对象','频域矫正');
+[Gm,Pm,Wcg,Wcp] = margin(Gd*Cd);
+BW = bandwidth(Close_d);
+fprintf('D轴电流环超前校正：\n')
+fprintf('开环截止频率：%.3fHz\n',Wcp/(2*pi));
+fprintf('相位裕度：%.3f°\n',Pm);
+fprintf('相位穿越频率：%.3fHz\n',Wcg/(2*pi));
+fprintf('幅值裕度：%.3fdB\n',20*log10(Gm));
+fprintf('闭环带宽：%.3fHz\n',BW/(2*pi));
+%% D轴频域矫正控制器正向阶跃验证
+data = load('D_Close_P.txt');
+input = data(:,10);
+output_rec = data(:,5);
+Iq = data(:,6);
+theta_e = data(:,2);
+we = zeros(length(theta_e),1);
+we(1) = 0;
+for i=2:length(we)
+    we(i)=(theta_e(i)-theta_e(i-1))/Ts * 2 * pi / 360;
+    if(abs(theta_e(i)-theta_e(i-1))>50)
+        we(i)=we(i-1);
+    end
+end
+t = Ts:Ts:Ts*(length(input));
+Sim_input = [t',input];
+Sim_Iq = [t',Iq];
+Sim_we = [t',we];
+t = Ts:Ts:Ts*(length(input));
+Sim_input = [t',input];
+out = sim("D_Axis.slx");
+output_sim = out.Sim_output.Data;
+figure;
+plot(t(Start:Stop),output_rec(Start:Stop), ...
+    t(Start:Stop),output_sim(Start:Stop),LineWidth=2);
+title('D轴正向阶跃给定的闭环响应对比');
+legend('实测输出','仿真输出');
+grid on;
+ylabel('电流/A');
+xlabel('时间/s');
+cov_sim_rec = cov(output_rec(Start:Stop), output_sim(Start:Stop));
+cov_sim_rec=cov_sim_rec(1,2);
+r=cov_sim_rec/(sqrt(var(output_rec(Start:Stop)))* ...
+    sqrt(var(output_sim(Start:Stop))));
+fprintf('D轴正向阶跃给定的闭环相关系数：%.5f%%\n',r*100);
+
+%% D轴频域矫正控制器负向阶跃验证
+data = load('D_Close_N.txt');
+input = data(:,10);
+output_rec = data(:,5);
+Iq = data(:,6);
+theta_e = data(:,2);
+we = zeros(length(theta_e),1);
+we(1) = 0;
+for i=2:length(we)
+    we(i)=(theta_e(i)-theta_e(i-1))/Ts * 2 * pi / 360;
+    if(abs(theta_e(i)-theta_e(i-1))>50)
+        we(i)=we(i-1);
+    end
+end
+t = Ts:Ts:Ts*(length(input));
+Sim_input = [t',input];
+Sim_Iq = [t',Iq];
+Sim_we = [t',we];
+out = sim("D_Axis.slx");
+output_sim = out.Sim_output.Data;
+figure;
+plot(t(Start:Stop),output_rec(Start:Stop), ...
+    t(Start:Stop),output_sim(Start:Stop),LineWidth=2);
+title('D轴负向阶跃给定的闭环响应对比');
+legend('实测输出','仿真输出');
+grid on;
+ylabel('电流/A');
+xlabel('时间/s');
+cov_sim_rec = cov(output_rec(Start:Stop), output_sim(Start:Stop));
+cov_sim_rec=cov_sim_rec(1,2);
+r=cov_sim_rec/(sqrt(var(output_rec(Start:Stop)))* ...
+    sqrt(var(output_sim(Start:Stop))));
+fprintf('D轴负向阶跃给定的闭环相关系数：%.5f%%\n\n',r*100);
+
+%% Q轴频域矫正控制器设计
+%相位补偿/°
+phi = 30;
+%补偿频率/Hz
+f = 2000;
+f = 500;
+% %补偿分贝数
+% A = 89.5;
+%计算频域矫正控制器
+alpha_q = (1-sin(deg2rad(phi)))/(1+sin(deg2rad(phi)));
+Tq = 1/(2*pi*f*sqrt(alpha_q));
+Kq = 1;
+Cq = Kq * 1/s * (Tq*s+1)/(alpha_q*Tq*s+1);
+Cq = c2d(Cq,Ts,'tustin');
+[A,~,~]=bode(Gq*Cq,2*pi*f);
+Kd = 1/A;
+Cq = Cq * Kd;
+figure;
+bode(Gq,Gq*Cq,opts);
+grid on;
+title('Q轴电流环开环伯德图');
+legend('被控对象','频域矫正');
+Close_q = feedback(Gq*Cq,1);
+figure;
+bode(Close_q,opts);
+grid on;
+title('Q轴电流环闭环伯德图');
+figure;
+step(Gq,Close_q);
+grid on;
+title('Q轴电流环单位阶跃响应');
+legend('被控对象','频域矫正');
+[Gm,Pm,Wcg,Wcp] = margin(Gq*Cq);
+BW = bandwidth(Close_q);
+fprintf('Q轴电流环超前校正：\n')
+fprintf('开环截止频率：%.3fHz\n',Wcp/(2*pi));
+fprintf('相位裕度：%.3f°\n',Pm);
+fprintf('相位穿越频率：%.3fHz\n',Wcg/(2*pi));
+fprintf('幅值裕度：%.3fdB\n',20*log10(Gm));
+fprintf('闭环带宽：%.3fHz\n',BW/(2*pi));
+%% Q轴频域矫正控制器正向阶跃验证
+data = load('Q_Close_P.txt');
+input = data(:,11);
+output_rec = data(:,6);
+Id = data(:,5);
+theta_e = data(:,2);
+we = zeros(length(theta_e),1);
+we(1) = 0;
+for i=2:length(we)
+    we(i)=(theta_e(i)-theta_e(i-1))/Ts * 2 * pi / 360;
+    if(abs(theta_e(i)-theta_e(i-1))>50)
+        we(i)=we(i-1);
+    end
+end
+we = lowpass(we,0.1);
+t = Ts:Ts:Ts*(length(input));
+Sim_input = [t',input];
+Sim_Id = [t',Id];
+Sim_we = [t',we];
+out = sim("Q_Axis.slx");
+output_sim = out.Sim_output.Data;
+figure;
+plot(t(Start:Stop),output_rec(Start:Stop), ...
+    t(Start:Stop),output_sim(Start:Stop),LineWidth=2);
+title('Q轴正向阶跃给定的闭环响应对比');
+legend('实测输出','仿真输出');
+grid on;
+ylabel('电流/A');
+xlabel('时间/s');
+cov_sim_rec = cov(output_rec(Start:Stop), output_sim(Start:Stop));
+cov_sim_rec=cov_sim_rec(1,2);
+r=cov_sim_rec/(sqrt(var(output_rec(Start:Stop)))* ...
+    sqrt(var(output_sim(Start:Stop))));
+fprintf('Q轴正向阶跃给定的闭环相关系数：%.5f%%\n',r*100);
+
+%% Q轴频域矫正控制器负向阶跃验证
+data = load('Q_Close_N.txt');
+input = data(:,11);
+output_rec = data(:,6);
+Id = data(:,5);
+theta_e = data(:,2);
+we = zeros(length(theta_e),1);
+we(1) = 0;
+for i=2:length(we)
+    we(i)=(theta_e(i)-theta_e(i-1))/Ts * 2 * pi / 360;
+    if(abs(theta_e(i)-theta_e(i-1))>50)
+        we(i)=we(i-1);
+    end
+end
+we = lowpass(we,0.1);
+t = Ts:Ts:Ts*(length(input));
+Sim_input = [t',input];
+Sim_Id = [t',Id];
+Sim_we = [t',we];
+t = Ts:Ts:Ts*(length(input));
+Sim_input = [t',input];
+out = sim("Q_Axis.slx");
+output_sim = out.Sim_output.Data;
+figure;
+plot(t(Start:Stop),output_rec(Start:Stop), ...
+    t(Start:Stop),output_sim(Start:Stop),LineWidth=2);
+title('Q轴负向阶跃给定的闭环响应对比');
+legend('实测输出','仿真输出');
+grid on;
+ylabel('电流/A');
+xlabel('时间/s');
+cov_sim_rec = cov(output_rec(Start:Stop), output_sim(Start:Stop));
+cov_sim_rec=cov_sim_rec(1,2);
+r=cov_sim_rec/(sqrt(var(output_rec(Start:Stop)))* ...
+    sqrt(var(output_sim(Start:Stop))));
+fprintf('Q轴负向阶跃给定的闭环相关系数：%.5f%%\n',r*100);
+##### SOURCE END #####
+-->
+</body>
+</html>
