@@ -174,50 +174,50 @@ sys_tf
 figure;
 pzmap(sys_tf);
 %% 速度环控制器设计
-% %相位补偿/°
-% phi = 50;
-% %补偿频率/Hz
-% f = 0.1;
-% %补偿分贝数
-% A = 28;
-% %计算频域矫正控制器
-% alpha_d = (1-sin(deg2rad(phi)))/(1+sin(deg2rad(phi)));
-% Td = 1/(2*pi*f*sqrt(alpha_d));
-% Kd = db2mag(A);
-% Cd =Kd * (Td*s+1)/(alpha_d*Td*s+1);
-% Cd = c2d(Cd,Ts,'tustin') * (z^2 - 1.672 *z + 0.7639)/((z-0.0382)*(z-0.5));
-% figure;
-% bode(sys_tf,sys_tf*Cd,opts);
-% grid on;
-% title('速度环开环伯德图');
-% legend('被控对象','频域矫正');
-% Close_s = feedback(sys_tf*Cd,1);
-% figure;
-% bode(Close_s,opts);
-% grid on;
-% title('速度环闭环伯德图');
-% figure;
-% step(sys_tf,Close_s);
-% grid on;
-% title('速度环单位阶跃响应');
-% legend('被控对象','频域矫正');
-% Cd
+%相位补偿/°
+phi = 50;
+%补偿频率/Hz
+f = 0.1;
+%补偿分贝数
+A = 28;
+%计算频域矫正控制器
+alpha_d = (1-sin(deg2rad(phi)))/(1+sin(deg2rad(phi)));
+Td = 1/(2*pi*f*sqrt(alpha_d));
+Kd = db2mag(A);
+Cd =Kd * (Td*s+1)/(alpha_d*Td*s+1);
+Cd = c2d(Cd,Ts,'tustin') * (z^2 - 1.672 *z + 0.7639)/((z-0.0382)*(z-0.5));
+figure;
+bode(sys_tf,sys_tf*Cd,opts);
+grid on;
+title('速度环开环伯德图');
+legend('被控对象','频域矫正');
+Close_s = feedback(sys_tf*Cd,1);
+figure;
+bode(Close_s,opts);
+grid on;
+title('速度环闭环伯德图');
+figure;
+step(sys_tf,Close_s);
+grid on;
+title('速度环单位阶跃响应');
+legend('被控对象','频域矫正');
+Cd
 
-% C_PI = 0.001 + 0.005/s;
-% C_PI = c2d(C_PI,Ts,'tustin');
-% figure;
-% bode(sys_tf,sys_tf*C_PI,opts);
-% grid on;
-% title('速度环开环伯德图');
-% legend('被控对象','频域矫正');
-% Close_s = feedback(sys_tf*C_PI,1);
-% figure;
-% bode(Close_s,opts);
-% grid on;
-% title('速度环闭环伯德图');
-% figure;
-% step(sys_tf,Close_s);
-% grid on;
-% title('速度环单位阶跃响应');
-% legend('被控对象','频域矫正');
-% C_PI
+C_PI = 0.001 + 0.005/s;
+C_PI = c2d(C_PI,Ts,'tustin');
+figure;
+bode(sys_tf,sys_tf*C_PI,opts);
+grid on;
+title('速度环开环伯德图');
+legend('被控对象','频域矫正');
+Close_s = feedback(sys_tf*C_PI,1);
+figure;
+bode(Close_s,opts);
+grid on;
+title('速度环闭环伯德图');
+figure;
+step(sys_tf,Close_s);
+grid on;
+title('速度环单位阶跃响应');
+legend('被控对象','频域矫正');
+C_PI

@@ -28,15 +28,15 @@ output = output - mean(output);
 n = length(input);
 Ruu = xcorr(input, input)';
 Ryu = xcorr(output, input)';
-figure;
-hold on;
-title('输入输出互相关函数');
-i=-(n-1):1:n-1;
-plot(i,Ryu);
-figure;
-hold on;
-title('输入自相关函数函数');
-plot(i,Ruu);
+% figure;
+% hold on;
+% title('输入输出互相关函数');
+% i=-(n-1):1:n-1;
+% plot(i,Ryu);
+% figure;
+% hold on;
+% title('输入自相关函数函数');
+% plot(i,Ruu);
 %xcorr计算得到的是列向量，需要转置得到行向量，且原本的[-(n-1),n-1]索引范围会变成[1,2n-1]
 %即全部加n，并且互相关计算时要把输出信号前置，输入信号后置（xcorr存在顺序问题）
 for i = 1:n%构造自相关托普利茨矩阵
@@ -44,9 +44,9 @@ for i = 1:n%构造自相关托普利茨矩阵
 end
 ryu = Ryu(n:2*n-1);%构造互相关列向量
 g = inv(ruu)*ryu';%系统脉冲响应序列，序号从1开始，因此g(k)其实在k+1的位置上
-figure;
-plot(g);
-title('脉冲响应序列');
+% figure;
+% plot(g);
+% title('脉冲响应序列');
 
 %二、系统阶次分析
 for i = 1:k%构造汉克尔矩阵
@@ -55,12 +55,12 @@ end
 [U, S, V]=svd(H);%奇异值分解
 sigma = S.^(0.5);
 S = 1/S(1,1) .* S;
-figure;
-title('汉克尔矩阵奇异值');
-hold on;
-for i=1:k
-    stem(i,S(i,i));
-end
+% figure;
+% title('汉克尔矩阵奇异值');
+% hold on;
+% for i=1:k
+%     stem(i,S(i,i));
+% end
 
 %三、系统模型求解
 for i = 1:k%构造移位汉克尔矩阵
@@ -96,7 +96,9 @@ function [sys_tf,Gest] = DataProcess (input, output, k, m, Ts)
 
 opts = bodeoptions;
 opts.FreqUnits = 'Hz';       
-opts.PhaseWrapping = 'on';     
+opts.PhaseWrapping = 'on';    
+opts.Grid = 'on';
+opts.XLim = [1, 1/(2*Ts)];
 
 n=length(input);
 %频点向量
@@ -129,6 +131,7 @@ Gest = frd(H_est,w);
 figure;
 bode(sys_tf,Gest,opts);
 legend("解析解",'数值解');
+grid minor;
 
 [Ags,Pgs] = bode(Gest,w);
 Ags = 20*log10(squeeze(Ags));
@@ -156,55 +159,53 @@ k = 8;
 %系统阶次
 m = 2;
 %采样时间
-Ts = 1/15000;
+Ts = 1/(170000000 / 5665 / 2);
 
 opts = bodeoptions;
 opts.FreqUnits = 'Hz';       
 opts.PhaseWrapping = 'on';     
 
-Rs_O = 8.40955;
+Rs_O = 5.70125;
 %Ld = -Rs_O*Ts/log(pole)
 
 %% 数据
 
 data = load("Ld_0.txt");
 fprintf('工作点0V：\n');
-input_p0 = data(:,14);
-output_p0 = data(:,8) - mean(data(:,8));
+input_p0 = data(:,8);
+output_p0 = data(:,5) - mean(data(:,5));
 [sys_tf_p0,Gest_p0] = DataProcess(input_p0,output_p0,k,m,Ts);
 Ld_0 = -Rs_O*Ts./log((pole(sys_tf_p0)));
 fprintf('辨识结果：%.5f mH\n\n',Ld_0(1)*1000);
 
-%%
-
 data = load("Ld_2.txt");
 fprintf('工作点2V：\n');
-input_p2 = data(:,14) - 2;
-output_p2 = data(:,8) - mean(data(:,8));
+input_p2 = data(:,8) - 2;
+output_p2 = data(:,5) - mean(data(:,5));
 [sys_tf_p2,Gest_p2] = DataProcess(input_p2,output_p2,k,m,Ts);
 Ld_p2 = -Rs_O*Ts./log((pole(sys_tf_p2)));
 fprintf('辨识结果：%.5f mH\n\n',Ld_p2(1)*1000);
 
 data = load("Ld_4.txt");
 fprintf('工作点4V：\n');
-input_p4 = data(:,14) - 4;
-output_p4 = data(:,8) - mean(data(:,8));
+input_p4 = data(:,8) - 4;
+output_p4 = data(:,5) - mean(data(:,5));
 [sys_tf_p4,Gest_p4] = DataProcess(input_p4,output_p4,k,m,Ts);
 Ld_p4 = -Rs_O*Ts./log((pole(sys_tf_p4)));
 fprintf('辨识结果：%.5f mH\n\n',Ld_p4(1)*1000);
 
 data = load("Ld_-2.txt");
 fprintf('工作点-2V：\n');
-input_n2 = data(:,14) + 2;
-output_n2 = data(:,8) - mean(data(:,8));
+input_n2 = data(:,8) + 2;
+output_n2 = data(:,5) - mean(data(:,5));
 [sys_tf_n2,Gest_n2] = DataProcess(input_n2,output_n2,k,m,Ts);
 Ld_n2 = -Rs_O*Ts./log((pole(sys_tf_n2)));
 fprintf('辨识结果：%.5f mH\n\n',Ld_n2(1)*1000);
 
 data = load("Ld_-4.txt");
 fprintf('工作点-4V：\n');
-input_n4 = data(:,14) + 4;
-output_n4 = data(:,8) - mean(data(:,8));
+input_n4 = data(:,8) + 4;
+output_n4 = data(:,5) - mean(data(:,5));
 [sys_tf_n4,Gest_n4] = DataProcess(input_n4,output_n4,k,m,Ts);
 Ld_n4 = -Rs_O*Ts./log((pole(sys_tf_n4)));
 fprintf('辨识结果：%.5f mH\n\n',Ld_n4(1)*1000);
@@ -213,9 +214,11 @@ figure;
 pzmap(sys_tf_p0,sys_tf_p2,sys_tf_p4,sys_tf_n2,sys_tf_n4);
 title('D轴传递函数零极点图');
 grid on;
+grid minor;
 legend('工作点0','工作点2','工作点4','工作点-2','工作点-4');
 figure;
 bode(sys_tf_p0,sys_tf_p2,sys_tf_p4,sys_tf_n2,sys_tf_n4,opts);
 title('D轴传递函数频率特性曲线');
 grid on;
+grid minor;
 legend('工作点0','工作点2','工作点4','工作点-2','工作点-4');
