@@ -190,7 +190,7 @@ Lq_est(6) = Lq_hat;
 Lq_sig(6) = Lq_sigma;
 
 %% 拟合曲线
-figure;
+figure(Name='1kHz线性回归曲线');
 subplot(3,1,1);
 plot(theta,L_AB_1k,theta,Y(1,:),LineWidth=2);
 grid on;
@@ -214,7 +214,7 @@ subtitle('AC')
 legend('测量曲线','拟合曲线');
 sgtitle('相间电感拟合结果（1kHz）');
 
-figure;
+figure(Name='10kHz线性回归曲线');
 subplot(3,1,1);
 plot(theta,L_AB_10k,theta,Y(4,:),LineWidth=2);
 grid on;
@@ -248,7 +248,7 @@ idx_10k = 4:6;  % AB, BC, AC @10kHz
 x = 1:3;
 labels = {'AB', 'BC', 'AC'};
 
-figure;
+figure(Name='置信区间');
 
 subplot(2,2,1);
 hold on;

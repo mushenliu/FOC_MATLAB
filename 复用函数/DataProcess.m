@@ -36,7 +36,7 @@ Syu = fft(Ryu(n:end));
 H_est = Syu./Suu;
 Gest = frd(H_est,w);
 
-figure;
+figure(Name='频域对比');
 bode(sys_tf,Gest,opts);
 legend("解析解",'数值解');
 grid on;

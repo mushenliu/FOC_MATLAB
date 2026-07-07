@@ -18,7 +18,7 @@ opts = bodeoptions;
 opts.FreqUnits = 'Hz';
 opts.PhaseWrapping = 'on';
 
-figure;
+figure(Name='Ho-Kalman辨识分析')
 sgtitle('Ho-Kalman辨识分析');
 
 %一、系统脉冲响应序列求解
