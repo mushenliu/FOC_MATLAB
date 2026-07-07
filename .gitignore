@@ -1,0 +1,11 @@
+# Simulink 缓存
+slprj/
+
+# MATLAB Project 自动生成元数据
+resources/
+
+# Simulink 缓存文件
+*.slxc
+
+# 生成的 HTML 报告
+**/html/
