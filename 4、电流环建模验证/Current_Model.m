@@ -22,8 +22,10 @@ G_Q = c2d(1/(Rs+Lq*s) * exp(-1*Ts*s) * exp(-260e-9 * s) * 1/(120e-9 * s + 1), ..
     Ts,'zoh');
 
 %阶跃统计序列段
-Start = 950;
-Stop = 1300;
+D_Start = 950;
+D_Stop = 1300;
+Q_Start = 950;
+Q_Stop = 1300;
 %% D轴正向方波
 data =  readmatrix("D_Step_P.txt", 'NumHeaderLines', 1);
 Ud = data(end-2046:end,8);
@@ -44,9 +46,9 @@ t = Ts:Ts:Ts*(length(input));
 output_sim = lsim(G_D,input(1:end),t);
 figure(Name='D轴正向');
 subplot(1,2,1);
-plot(t(Start:Stop),output_rec(Start:Stop), ...
-    t(Start:Stop),output_sim(Start:Stop), ...
-    t(Start:Stop),Ud(Start:Stop).*0.1,LineWidth=2);
+plot(t(D_Start:D_Stop),output_rec(D_Start:D_Stop), ...
+    t(D_Start:D_Stop),output_sim(D_Start:D_Stop), ...
+    t(D_Start:D_Stop),Ud(D_Start:D_Stop).*0.1,LineWidth=2);
 subtitle('误差修正前');
 legend('实测输出','仿真输出','输入信号（衰减0.1）');
 grid on;
@@ -54,32 +56,20 @@ grid minor;
 ylabel('电流/A');
 xlabel('时间/s');
 subplot(1,2,2);
-plot(t(Start:Stop),output_rec(Start:Stop) + D_P_DC, ...
-    t(Start:Stop),output_sim(Start:Stop), ...
-    t(Start:Stop),Ud(Start:Stop).*0.1,LineWidth=2);
+plot(t(D_Start:D_Stop),output_rec(D_Start:D_Stop) + D_P_DC, ...
+    t(D_Start:D_Stop),output_sim(D_Start:D_Stop), ...
+    t(D_Start:D_Stop),Ud(D_Start:D_Stop).*0.1,LineWidth=2);
 subtitle('误差修正后');
 legend('实测输出','仿真输出','输入信号（衰减0.1）');
 grid on;
 grid minor;
 ylabel('电流/A');
 xlabel('时间/s');
-fprintf('D轴开环正向方波响应：\n')
-cov_sim_rec = cov(output_rec(Start:Stop), output_sim(Start:Stop));
-cov_sim_rec=cov_sim_rec(1,2);
-r=cov_sim_rec/(sqrt(var(output_rec(Start:Stop)))* ...
-    sqrt(var(output_sim(Start:Stop))));
-fprintf('加性误差修正前相关系数：%.5f%%\n',r*100);
-r = 100 * (1 - norm(output_rec(Start:Stop) - output_sim(Start:Stop)) / ...
-    norm(output_rec(Start:Stop) - mean(output_rec(Start:Stop))));
-fprintf('加性误差修正前拟合优度：%.5f%%\n',r);
-cov_sim_rec = cov((output_rec(Start:Stop)+D_P_DC), output_sim(Start:Stop));
-cov_sim_rec=cov_sim_rec(1,2);
-r=cov_sim_rec/(sqrt(var((output_rec(Start:Stop)+D_P_DC)))* ...
-    sqrt(var(output_sim(Start:Stop))));
-fprintf('加性误差修正后相关系数：%.5f%%\n',r*100);
-r = 100 * (1 - norm((output_rec(Start:Stop)+D_P_DC) - output_sim(Start:Stop)) / ...
-    norm((output_rec(Start:Stop)+D_P_DC) - mean(output_rec(Start:Stop))));
-fprintf('加性误差修正后拟合优度：%.5f%%\n\n',r);
+fprintf('D轴开环正向方波响应（加性误差修正前）：\n')
+Signal_Analyse(output_rec(D_Start:D_Stop),output_sim(D_Start:D_Stop));
+fprintf('D轴开环正向方波响应（加性误差修正后）：\n')
+Signal_Analyse(output_rec(D_Start:D_Stop)+D_P_DC,output_sim(D_Start:D_Stop));
+
 
 %% D轴负向方波
 data =  readmatrix("D_Step_N.txt", 'NumHeaderLines', 1);
@@ -100,9 +90,9 @@ output_rec = data(end-2046:end,5);
 output_sim = lsim(G_D,input(1:end),t);
 figure(Name='D轴负向');
 subplot(1,2,1);
-plot(t(Start:Stop),output_rec(Start:Stop), ...
-    t(Start:Stop),output_sim(Start:Stop), ...
-    t(Start:Stop),Ud(Start:Stop).*0.1,LineWidth=2);
+plot(t(D_Start:D_Stop),output_rec(D_Start:D_Stop), ...
+    t(D_Start:D_Stop),output_sim(D_Start:D_Stop), ...
+    t(D_Start:D_Stop),Ud(D_Start:D_Stop).*0.1,LineWidth=2);
 subtitle('误差修正前');
 legend('实测输出','仿真输出','输入信号（衰减0.1）');
 grid on;
@@ -110,32 +100,20 @@ grid minor;
 ylabel('电流/A');
 xlabel('时间/s');
 subplot(1,2,2);
-plot(t(Start:Stop),output_rec(Start:Stop) + D_N_DC, ...
-    t(Start:Stop),output_sim(Start:Stop), ...
-    t(Start:Stop),Ud(Start:Stop).*0.1,LineWidth=2);
+plot(t(D_Start:D_Stop),output_rec(D_Start:D_Stop) + D_N_DC, ...
+    t(D_Start:D_Stop),output_sim(D_Start:D_Stop), ...
+    t(D_Start:D_Stop),Ud(D_Start:D_Stop).*0.1,LineWidth=2);
 subtitle('误差修正后');
 legend('实测输出','仿真输出','输入信号（衰减0.1）');
 grid on;
 grid minor;
 ylabel('电流/A');
 xlabel('时间/s');
-fprintf('D轴开环负向方波响应：\n');
-cov_sim_rec = cov(output_rec(Start:Stop), output_sim(Start:Stop));
-cov_sim_rec=cov_sim_rec(1,2);
-r=cov_sim_rec/(sqrt(var(output_rec(Start:Stop)))* ...
-    sqrt(var(output_sim(Start:Stop))));
-fprintf('加性误差修正前相关系数：%.5f%%\n',r*100);
-r = 100 * (1 - norm(output_rec(Start:Stop) - output_sim(Start:Stop)) / ...
-    norm(output_rec(Start:Stop) - mean(output_rec(Start:Stop))));
-fprintf('加性误差修正前拟合优度：%.5f%%\n',r);
-cov_sim_rec = cov((output_rec(Start:Stop)+D_N_DC), output_sim(Start:Stop));
-cov_sim_rec=cov_sim_rec(1,2);
-r=cov_sim_rec/(sqrt(var((output_rec(Start:Stop)+D_N_DC)))* ...
-    sqrt(var(output_sim(Start:Stop))));
-fprintf('加性误差修正后相关系数：%.5f%%\n',r*100);
-r = 100 * (1 - norm((output_rec(Start:Stop)+D_N_DC) - output_sim(Start:Stop)) / ...
-    norm((output_rec(Start:Stop)+D_N_DC) - mean(output_rec(Start:Stop))));
-fprintf('加性误差修正后拟合优度：%.5f%%\n\n',r);
+fprintf('\nD轴开环负向方波响应（加性误差修正前）：\n')
+Signal_Analyse(output_rec(D_Start:D_Stop),output_sim(D_Start:D_Stop));
+fprintf('D轴开环负向方波响应（加性误差修正后）：\n')
+Signal_Analyse(output_rec(D_Start:D_Stop)+D_P_DC,output_sim(D_Start:D_Stop));
+
 
 
 %% Q轴正向方波
@@ -157,9 +135,9 @@ output_rec = data(end-2046:end,6);
 output_sim = lsim(G_Q,input(1:end),t);
 figure(Name='Q轴正向');
 subplot(1,2,1);
-plot(t(Start:Stop),output_rec(Start:Stop), ...
-    t(Start:Stop),output_sim(Start:Stop), ...
-    t(Start:Stop),Uq(Start:Stop).*0.1,LineWidth=2);
+plot(t(Q_Start:Q_Stop),output_rec(Q_Start:Q_Stop), ...
+    t(Q_Start:Q_Stop),output_sim(Q_Start:Q_Stop), ...
+    t(Q_Start:Q_Stop),Uq(Q_Start:Q_Stop).*0.1,LineWidth=2);
 subtitle('误差修正前');
 legend('实测输出','仿真输出','输入信号（衰减0.1）');
 grid on;
@@ -167,32 +145,20 @@ grid minor;
 ylabel('电流/A');
 xlabel('时间/s');
 subplot(1,2,2);
-plot(t(Start:Stop),output_rec(Start:Stop).*Q_P_GAIN, ...
-    t(Start:Stop),output_sim(Start:Stop), ...
-    t(Start:Stop),Uq(Start:Stop).*0.1,LineWidth=2);
+plot(t(Q_Start:Q_Stop),output_rec(Q_Start:Q_Stop).*Q_P_GAIN, ...
+    t(Q_Start:Q_Stop),output_sim(Q_Start:Q_Stop), ...
+    t(Q_Start:Q_Stop),Uq(Q_Start:Q_Stop).*0.1,LineWidth=2);
 subtitle('误差修正后');
 legend('实测输出','仿真输出','输入信号（衰减0.1）');
 grid on;
 grid minor;
 ylabel('电流/A');
 xlabel('时间/s');
-fprintf('Q轴开环正向方波响应：\n');
-cov_sim_rec = cov(output_rec(Start:Stop), output_sim(Start:Stop));
-cov_sim_rec=cov_sim_rec(1,2);
-r=cov_sim_rec/(sqrt(var(output_rec(Start:Stop)))* ...
-    sqrt(var(output_sim(Start:Stop))));
-fprintf('乘性误差修正前相关系数：%.5f%%\n',r*100);
-r = 100 * (1 - norm(output_rec(Start:Stop) - output_sim(Start:Stop)) / ...
-    norm(output_rec(Start:Stop) - mean(output_rec(Start:Stop))));
-fprintf('乘性误差修正前拟合优度：%.5f%%\n',r);
-cov_sim_rec = cov(output_rec(Start:Stop)*Q_P_GAIN, output_sim(Start:Stop));
-cov_sim_rec=cov_sim_rec(1,2);
-r=cov_sim_rec/(sqrt(var((output_rec(Start:Stop)*Q_P_GAIN)))* ...
-    sqrt(var(output_sim(Start:Stop))));
-fprintf('乘性误差修正后相关系数：%.5f%%\n',r*100);
-r = 100 * (1 - norm((output_rec(Start:Stop)*Q_P_GAIN) - output_sim(Start:Stop)) / ...
-    norm((output_rec(Start:Stop)*Q_P_GAIN) - mean(output_sim(Start:Stop))));
-fprintf('乘性误差修正后拟合优度：%.5f%%\n\n',r);
+fprintf('\nQ轴开环正向方波响应（乘性误差修正前）：\n')
+Signal_Analyse(output_rec(Q_Start:Q_Stop),output_sim(Q_Start:Q_Stop));
+fprintf('Q轴开环正向方波响应（乘性误差修正后）：\n')
+Signal_Analyse(output_rec(Q_Start:Q_Stop).*Q_P_GAIN,output_sim(Q_Start:Q_Stop));
+
 
 %% Q轴负向阶跃
 data = readmatrix("Q_Step_N.txt", 'NumHeaderLines', 1);
@@ -213,9 +179,9 @@ output_rec = data(end-2046:end,6);
 output_sim = lsim(G_Q,input(1:end),t);
 figure(Name='Q轴负向');
 subplot(1,2,1);
-plot(t(Start:Stop),output_rec(Start:Stop), ...
-    t(Start:Stop),output_sim(Start:Stop), ...
-    t(Start:Stop),Uq(Start:Stop).*0.1,LineWidth=2);
+plot(t(Q_Start:Q_Stop),output_rec(Q_Start:Q_Stop), ...
+    t(Q_Start:Q_Stop),output_sim(Q_Start:Q_Stop), ...
+    t(Q_Start:Q_Stop),Uq(Q_Start:Q_Stop).*0.1,LineWidth=2);
 subtitle('误差修正前');
 legend('实测输出','仿真输出','输入信号（衰减0.1）');
 grid on;
@@ -223,29 +189,16 @@ grid minor;
 ylabel('电流/A');
 xlabel('时间/s');
 subplot(1,2,2);
-plot(t(Start:Stop),output_rec(Start:Stop).*Q_N_GAIN, ...
-    t(Start:Stop),output_sim(Start:Stop), ...
-    t(Start:Stop),Uq(Start:Stop).*0.1,LineWidth=2);
+plot(t(Q_Start:Q_Stop),output_rec(Q_Start:Q_Stop).*Q_N_GAIN, ...
+    t(Q_Start:Q_Stop),output_sim(Q_Start:Q_Stop), ...
+    t(Q_Start:Q_Stop),Uq(Q_Start:Q_Stop).*0.1,LineWidth=2);
 subtitle('误差修正后');
 legend('实测输出','仿真输出','输入信号（衰减0.1）');
 grid on;
 grid minor;
 ylabel('电流/A');
 xlabel('时间/s');
-fprintf('Q轴开环正向方波响应：\n');
-cov_sim_rec = cov(output_rec(Start:Stop), output_sim(Start:Stop));
-cov_sim_rec=cov_sim_rec(1,2);
-r=cov_sim_rec/(sqrt(var(output_rec(Start:Stop)))* ...
-    sqrt(var(output_sim(Start:Stop))));
-fprintf('乘性误差修正前相关系数：%.5f%%\n',r*100);
-r = 100 * (1 - norm(output_rec(Start:Stop) - output_sim(Start:Stop)) / ...
-    norm(output_rec(Start:Stop) - mean(output_rec(Start:Stop))));
-fprintf('乘性误差修正前拟合优度：%.5f%%\n',r);
-cov_sim_rec = cov(output_rec(Start:Stop)*Q_N_GAIN, output_sim(Start:Stop));
-cov_sim_rec=cov_sim_rec(1,2);
-r=cov_sim_rec/(sqrt(var((output_rec(Start:Stop)*Q_N_GAIN)))* ...
-    sqrt(var(output_sim(Start:Stop))));
-fprintf('乘性误差修正后相关系数：%.5f%%\n',r*100);
-r = 100 * (1 - norm((output_rec(Start:Stop)*Q_N_GAIN) - output_sim(Start:Stop)) / ...
-    norm((output_rec(Start:Stop)*Q_N_GAIN) - mean(output_sim(Start:Stop))));
-fprintf('乘性误差修正后拟合优度：%.5f%%\n\n',r);
+fprintf('\nQ轴开环负向方波响应（乘性误差修正前）：\n')
+Signal_Analyse(output_rec(Q_Start:Q_Stop),output_sim(Q_Start:Q_Stop));
+fprintf('Q轴开环负向方波响应（乘性误差修正后）：\n')
+Signal_Analyse(output_rec(Q_Start:Q_Stop).*Q_P_GAIN,output_sim(Q_Start:Q_Stop));

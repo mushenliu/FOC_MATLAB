@@ -134,6 +134,26 @@ title('Q轴传递函数频率特性曲线');
 grid on;
 grid minor;
 legend('工作点0','工作点2','工作点4','工作点-2','工作点-4');
+figure(Name='相干函数对比');
+[gamma_p0, F] = mscohere(input_0,output_0, hamming(256), 32, 1024, 1/Ts);
+gamma_p0 = 20*log10(gamma_p0);
+[gamma_p2, ~] = mscohere(input_p2,output_p2, hamming(256), 32, 1024, 1/Ts);
+gamma_p2 = 20*log10(gamma_p2);
+[gamma_p4, ~] = mscohere(input_p4,output_p4, hamming(256), 32, 1024, 1/Ts);
+gamma_p4 = 20*log10(gamma_p4);
+[gamma_n2, ~] = mscohere(input_n2,output_n2, hamming(256), 32, 1024, 1/Ts);
+gamma_n2 = 20*log10(gamma_n2);
+[gamma_n4, ~] = mscohere(input_n4,output_n4, hamming(256), 32, 1024, 1/Ts);
+gamma_n4 = 20*log10(gamma_n4);
+semilogx(F,gamma_p0,F,gamma_p2,F,gamma_p4,F,gamma_n2,F,gamma_n4);
+grid on;
+grid minor;
+xlabel('频率/Hz');
+ylabel('分贝/dB');
+ylim([-0.5,0]);
+xlim([10,3000]);
+subtitle('输入输出相干函数');
+legend('工作点0','工作点2','工作点4','工作点-2','工作点-4');
 
 %% 临时测试数据
 % data = readmatrix("Lq_test.txt", 'NumHeaderLines', 1);
