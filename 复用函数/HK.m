@@ -88,7 +88,8 @@ C = C(:,1:m);
 AO = CO \ H1 / BO;
 A = AO(1:m,1:m);
 %馈通矩阵求解
-D = g(1);
+% D = g(1);
+D = 0;
 sys_ss = ss(A,B,C,D,Ts);
 sys_tf = tf(sys_ss);
 end

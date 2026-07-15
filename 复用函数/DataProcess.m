@@ -33,9 +33,16 @@ Ruu = xcorr(input,input)';
 Ryu = xcorr(output,input)';
 Suu = fft(Ruu(n:end));
 Syu = fft(Ryu(n:end));
+% [gamma, F] = mscohere(input, output, hamming(256), 16, 2048, f);
+% figure(Name='相干函数');
+% loglog(F,gamma);
+% grid on;
+% grid minor;
+% xlabel('频率/Hz');
+% ylim([0,1]);
+% subtitle('输入输出相干函数');
 H_est = Syu./Suu;
 Gest = frd(H_est,w);
-
 figure(Name='频域对比');
 bode(sys_tf,Gest,opts);
 legend("解析解",'数值解');
